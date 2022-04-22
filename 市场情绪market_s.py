@@ -28,7 +28,7 @@ sql="""select t.`股票代码`,t.`股票名称` from gp_att t """
 df_gp= pd.read_sql(sql, con=db_connection)
 gp_code=df_gp['股票代码'].values.tolist()
 # gp_code=['688606','002435','001313','600798','002589','300081','600192','002178','300966','600272','002474','000710','002207','000881','000078','600661','600684','002878','600190','600982','300075','301126','002246','000953','603368','605116','002626','600051','603963','600833','603122','000411','002800','601615','603569','002898','600510','603029','601199','000862','300254','600777','600587','301130','001202','000723','601600','002997','300261','002717','002104','600546','600396','000807','600113','300264','600792','300249','002758','002385','600111','601101','300164','605333','000792','600880','600735','601880','000858','002172','603466','000718','000908','002340']
-
+# gp_code=['002435','001313','600798','002589','300081']
 star=time.time()#计算结束时间
 #%%
 # 沪市股票包含上证主板和科创板和B股：沪市主板股票代码是60开头、科创板股票代码是688开头、B股代码900开头。
@@ -51,6 +51,7 @@ number=0
 for gp in gp_code:
     try:
         ms1=[]#装一维数据
+        sigle_star=time.time()
         szsh=gp_type_szsh(gp)#分辨沪深股票  
         url_pre='http://quote.eastmoney.com/'
         # http://quote.eastmoney.com/sz002340.html
@@ -75,15 +76,19 @@ for gp in gp_code:
         ms1.append(gp_sup)
         ms1.append(gp_nsup)
         print('已完成'+str(gp))
+        browser.close()
         ms.append(ms1)
         
         number+=1
         aroumt=format(number/len(gp_code), '.4%')
         
-        process=time.time()#计算结束时间 
+        process=time.time()#计算结束时间 从开始到结束
         process_time= process-star
         process_time=strftime("%H:%M:%S", gmtime(process_time))
-        print('已经成功运行代码，用时'+ str(process_time)+'s,完成百分比：'+aroumt)
+        
+        sigle_time= process-sigle_star#单个股票执行时间 从开始到结束
+        sigle_time=strftime("%H:%M:%S", gmtime(sigle_time))
+        print('用时'+ str(sigle_time)+',累计用时'+ str(process_time)+'s,完成百分比：'+aroumt)
         
         
     except:
