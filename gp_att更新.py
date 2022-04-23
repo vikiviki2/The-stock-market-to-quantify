@@ -53,3 +53,4 @@ df_mysql(data_all,'gp_att','replace')
 
 from zyq_send_msg import *
 send_msg('已完成att更新')
+print('已完成att更新')

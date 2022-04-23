@@ -59,7 +59,6 @@ df_all=pd.DataFrame()
 number=0#计算完成率
 for gp in gp_code:
     try:
-        sigle_star=time.time()
         szsh=gp_type_szsh(gp)#分辨沪深股票  
         url_pre='http://quote.eastmoney.com/'
         # http://quote.eastmoney.com/sz002340.html
@@ -119,10 +118,7 @@ for gp in gp_code:
         process=time.time()#计算结束时间 
         process_time= process-star
         process_time=strftime("%H:%M:%S", gmtime(process_time))
-        
-        sigle_time= process-sigle_star#单个股票执行时间 从开始到结束
-        sigle_time=strftime("%H:%M:%S", gmtime(sigle_time))
-        print('用时'+ str(sigle_time)+',累计用时'+ str(process_time)+'s,完成百分比：'+aroumt)
+        print('已经成功运行代码，用时'+ str(process_time)+'s,完成百分比：'+aroumt)
         
     except:
         pass
