@@ -1,9 +1,0 @@
-diff a/股票详细信息.py b/股票详细信息.py	(rejected hunks)
-@@ -121,3 +121,6 @@
-         process_time=strftime("%H:%M:%S", gmtime(process_time))
--        print('已经成功运行代码，用时'+ str(process_time)+'s,完成百分比：'+aroumt)
-+        
-+        sigle_time= process-sigle_star#单个股票执行时间 从开始到结束
-+        sigle_time=strftime("%H:%M:%S", gmtime(sigle_time))
-+        print('用时'+ str(sigle_time)+',累计用时'+ str(process_time)+'s,完成百分比：'+aroumt)
-         
