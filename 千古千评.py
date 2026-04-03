@@ -6,7 +6,6 @@ Created on Sun Feb 12 11:43:38 2023
 """
 
 import pandas as pd
-import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
@@ -49,50 +48,6 @@ def round_robin_sublists(l,n=5):
 
 gp_code = round_robin_sublists(gp_code) 
 
-def normalize_stock_code(code):
-    code=str(code).strip()
-    if code.startswith('6'):
-        return 'sh'+code
-    if code.startswith(('0','3')):
-        return 'sz'+code
-    return code
-
-
-def scrape_eastmoney_guba(gp, pages=2, sleep_sec=(1,2)):
-    """抓取东方财富股吧最新帖子，用于“股票评价”。"""
-    gp = str(gp).strip()
-    result=[]
-    for page in range(1, pages+1):
-        url=f'https://guba.eastmoney.com/list,{gp},{page}.html'
-        headers={
-            'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Referer':'https://guba.eastmoney.com/'
-        }
-        try:
-            r=requests.get(url, headers=headers, timeout=15)
-            r.raise_for_status()
-            r.encoding='utf-8'
-            soup=BeautifulSoup(r.text,'lxml')
-            rows=soup.select('div.articleh')
-            for row in rows:
-                a=row.select_one('a')
-                title=a.get_text(strip=True) if a else ''
-                href='' if not a or not a.has_attr('href') else 'https://guba.eastmoney.com'+a['href']
-                author=row.select_one('span.l3')
-                date=row.select_one('span.l5')
-                category=row.select_one('span.l2')
-                result.append({
-                    '股票代码':gp,
-                    '标题':title,
-                    '链接':href,
-                    '作者':author.get_text(strip=True) if author else '',
-                    '时间':date.get_text(strip=True) if date else '',
-                    '分类':category.get_text(strip=True) if category else ''
-                })
-        except Exception as e:
-            print(f'抓取 {gp} 第{page}页失败: {e}')
-        time.sleep(random.uniform(*sleep_sec))
-    return pd.DataFrame(result)
 
 #gp='600500'
 
@@ -225,21 +180,6 @@ if __name__ == '__main__':
         
 finish = time.perf_counter()     
 print(f"全部任务执行完成，耗时 {round(finish - start,2)} 秒")
-
-# 额外：可选爬取东财股吧评论（用于“股票评价”）
-review_codes = os.getenv('CRAWL_GUBA_CODES', '').strip()
-if review_codes:
-    all_review = []
-    for item in [x.strip() for x in review_codes.split(',') if x.strip()]:
-        df_review = scrape_eastmoney_guba(item, pages=3)
-        if not df_review.empty:
-            all_review.append(df_review)
-            out_file = f'guba_{item}_comments.xlsx'
-            df_review.to_excel(out_file, index=False)
-            print(f'已保存股吧评论: {out_file} (条数 {len(df_review)})')
-    if all_review:
-        df_reviews_all = pd.concat(all_review, axis=0, ignore_index=True)
-        print(f'总共爬取 {len(df_reviews_all)} 条股吧评论')
 
 
 #%%

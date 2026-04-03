@@ -72,7 +72,7 @@ print("已检查stock_holder_detail是否有重复数据")
 #%%从gp_att 抽取代码
 
 #控制观察牛散数量
-rk=700
+rk=500
 
 import mysql.connector as sql
 db_connection = sql.connect(host='localhost', database='science', 

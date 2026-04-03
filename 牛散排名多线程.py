@@ -223,11 +223,10 @@ def fetch(rk_list_part):
     number=0#计算完成率
     for rk1 in rk_list_part:
         try:
-            
             df_hoder_rank,df_hoder_net,df_hoder_name=hoder_find(rk1 ,df_hoder)
-             
+    
             gp_info_list=find_data(df_hoder_net)
-                
+      
             df_result=list_table(gp_info_list,columns)
             
             

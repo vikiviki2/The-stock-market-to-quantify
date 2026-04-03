@@ -6,14 +6,6 @@ Created on Sun Mar 27 15:28:35 2022
 """
 
 
-import sys
-sys.path.append(r"C:\Users\Viki\Desktop\python\stock代码仓库")
-from 东方龙虎榜rqlhb import *    
-
-
-import sys
-sys.path.append(r"C:\Users\Viki\Desktop\python\stock代码仓库")
-from gp_att更新 import * 
 
 #跑完接市场情绪
 
