@@ -28,87 +28,133 @@ sql="""select distinct t.`股票代码` from gp_att t """
 df_gp= pd.read_sql(sql, con=db_connection)
 gp=df_gp['股票代码'].values.tolist()
 # gp=['002194', '002280', '002285', '002287', '002326', '002330', '002336', '002370', '002424', '002466', '002486', '002565', '002566', '002613', '002644', '002657', '002803', '002864', '002907', '002910', '002915', '300209', '300464', '300582', '300612', '300636', '600007', '600067', '600077', '600082', '600127', '600137', '600156', '600207', '600313', '600340', '600511', '600512', '600598', '600603', '600630', '600665', '600689', '600698', '600731', '600860', '600866', '601012', '601088', '601318', '601607', '601952', '603056', '603058', '603070', '603108', '603188', '603219', '603335', '603399', '603538', '603999', '605138', '605507']
+# gp=['688606','002435','001313','600798','002589','300081','600192','002178']
+def round_robin_sublists(l, n=4):
+    lists = [[] for _ in range(n)]
+    i = 0
+    for elem in l:
+        lists[i].append(elem)
+        i = (i + 1) % n
+    return lists
+
+gp = round_robin_sublists(gp) 
+
+
 
 #%%
 
-df_allgp=pd.DataFrame()
-url_pre='http://www.aigu5.com/cccb/'
-# gp=['600982', '002176', '000862', '600396', '002432']#测试用
-# gp=['600000']
-number=0
-for gp_code in gp:
-    try:
-        url=url_pre+gp_code +'.html'
-        os.chdir(r'D:\chromedriver')
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--headless')#无界面
-        browser=webdriver.Chrome(chrome_options=chrome_options)
-        # browser=webdriver.Chrome()
-        browser.get(url)
-        time.sleep(random.randint(3,8))
-        
-        #获取网页信息
-        html=browser.page_source
-        soup = BeautifulSoup(html, 'html.parser')#内置的标准库进行网页的解析
-        #获取其股票名称及股票代码
-        gp_name=soup.find('td',class_='font').text
-        #将其信息拆分到列表
-        gp_info=gp_name.strip(')').split('(')
-        
-        #把持仓成本那部分信息找出来
-        gp_df=soup.find('table',class_="lable_tab01").tbody
-        gp_df_info=gp_df.find_all('tr')
-        gp_df_info_columns=gp_df_info[0]
-        # gp_df_info_columns.contents  #遍历成列表     
-        
-        # data_columns=[]
-        # for child in gp_df_info_columns.children: 
-        #     try:
-        #         data_columns.append(child.text)
-        #     except:
-        #          pass #已改成一次性返回所有
-        
-        data_all=[]
-        for child in gp_df.children:
-            data=[]
-            for chi in child:           
-                
-                try:
-                      
-                    data.append(chi.text)
-                except:
-                     pass
-            if len(data) >1 :  
-                data_all.append(data)
-    
-    
-    
-        data=pd.DataFrame(data_all)
-        
-        headers = data.iloc[0]
-        new_df  = pd.DataFrame(data.values[1:], columns=headers)
-        
-        new_df=new_df[new_df['日期']!='平均']
-        new_df['股票代码']=gp_info[1]
-        new_df['股票名称']=gp_info[0]
-        print('已完成'+gp_info[0])
-        browser.close()#关闭浏览器
-        time.sleep(random.randint(3,8))
-        
-        df_allgp=pd.concat([df_allgp,new_df],axis=0)
-        
-        number+=1
-        aroumt=format(number/len(gp), '.4%') 
+def fetch(gp):
+    global df_allgp
 
-        
-        process=time.time()#计算结束时间 
-        process_time= process-star
-        process_time=strftime("%H:%M:%S", gmtime(process_time))
-        print('已经成功运行代码，用时'+ str(process_time)+'s,完成百分比：'+aroumt)
-    except:
-         pass
-         continue
+    url_pre='http://www.aigu5.com/cccb/'
+    # gp=['600982', '002176', '000862', '600396', '002432']#测试用
+    # gp=['600000']
+    number=0
+    for gp_code in gp:
+        try:
+            url=url_pre+gp_code +'.html'
+            os.chdir(r'D:\chromedriver')
+            chrome_options = webdriver.ChromeOptions()
+            chrome_options.add_argument('--headless')#无界面
+            browser=webdriver.Chrome(chrome_options=chrome_options)
+            # browser=webdriver.Chrome()
+            browser.get(url)
+            browser.implicitly_wait(6)
 
+            
+            #获取网页信息
+            html=browser.page_source
+            soup = BeautifulSoup(html, 'html.parser')#内置的标准库进行网页的解析
+            #获取其股票名称及股票代码
+            gp_name=soup.find('td',class_='font').text
+            #将其信息拆分到列表
+            gp_info=gp_name.strip(')').split('(')
+            
+            #把持仓成本那部分信息找出来
+            gp_df=soup.find('table',class_="lable_tab01").tbody
+            gp_df_info=gp_df.find_all('tr')
+            gp_df_info_columns=gp_df_info[0]
+            # gp_df_info_columns.contents  #遍历成列表     
+            
+            # data_columns=[]
+            # for child in gp_df_info_columns.children: 
+            #     try:
+            #         data_columns.append(child.text)
+            #     except:
+            #          pass #已改成一次性返回所有
+            
+            data_all=[]
+            for child in gp_df.children:
+                data=[]
+                for chi in child:           
+                    
+                    try:
+                          
+                        data.append(chi.text)
+                    except:
+                         pass
+                if len(data) >1 :  
+                    data_all.append(data)
+        
+        
+        
+            data=pd.DataFrame(data_all)
+            
+            headers = data.iloc[0]
+            new_df  = pd.DataFrame(data.values[1:], columns=headers)
+            
+            new_df=new_df[new_df['日期']!='平均']
+            new_df['股票代码']=gp_info[1]
+            new_df['股票名称']=gp_info[0]
+            browser.close()#关闭浏览器
+            time.sleep(random.randint(3,8))
+            
+            df_allgp=pd.concat([df_allgp,new_df],axis=0)
+            
+            number+=1
+            aroumt=format(number/len(gp), '.4%') 
+    
+            
+            process=time.time()#计算结束时间 
+            process_time= process-star
+            process_time=strftime("%H:%M:%S", gmtime(process_time))
+            print('已完成'+gp_info[0]+'，用时'+ str(process_time)+'s,完成百分比：'+aroumt)
+        except:
+             pass
+             continue
+    
+    return  df_allgp
+
+#%% 开始多线程处理任务
+from threading import Thread
+if __name__ == '__main__':   
+    start = time.perf_counter()
+    df_allgp=pd.DataFrame()   
+
+    thread_list = []
+    for gp_t in gp:
+        try:
+            thread =Thread(target=fetch, args=[gp_t])
+            thread.start()
+            thread_list.append(thread)
+        except Exception as e:
+            print (e)
+            pass
+            continue
+
+    for t in thread_list:
+        t.join()
+        
+finish = time.perf_counter()     
+print(f"全部任务执行完成，耗时 {round(finish - start,2)} 秒")
+
+
+
+
+
+
+
+#%%
 
 #整理数据，重新排列名
 df_allgp = df_allgp.reindex(['日期', '股票代码', '股票名称','全部', 
