@@ -52,3 +52,7 @@ stork_dm_other.rename(columns={'名称':'股票名称'},inplace=True)
 stork_dm_other['日期']=today
 from zyq_df_mysql import *
 df_mysql(stork_dm_other,'stock_dm_fresh_detail2','append')
+
+
+from zyq_send_msg import *
+send_msg('已成功更新fresh detail')

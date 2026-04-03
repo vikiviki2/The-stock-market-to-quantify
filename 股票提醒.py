@@ -42,7 +42,7 @@ select *from (
 select * from stock_rec_holder
 union all
 select * from stock_rec_holder_all) t
-where t.推荐更新日期 >  date_add(CURRENT_DATE(), interval -30 day);
+where t.推荐更新日期 >  date_add(CURRENT_DATE(), interval -90 day);
 
 drop table  stock_rec_holder_all;
 create table stock_rec_holder_all as  select * from stock_rec_holder_all_t;

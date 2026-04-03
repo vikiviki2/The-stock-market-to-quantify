@@ -55,10 +55,14 @@ import mysql.connector as sql
 #由人圈排行榜添加的代码
 db_connection = sql.connect(host='localhost', database='science', 
 user='root', password='ZXCVBNM123')
-sql="""select distinct t.股票代码,t.`股票名称` from stock_holder_detail_new t
-where t.`更新日期` >  SUBDATE(curdate(),60 )
-and t.动作  not like '%减少%'  
-and t.`类型`  not like '%减少%' """
+sql="""select distinct t.股票代码,t.`股票名称`
+from stock_holder_detail_dup_new t
+where t.动作 like '%增加%' 
+AND substr( t.`股票名称`, 1, 2 ) <> '退市' 
+AND substr( t.`股票名称`, 1, 2 ) <> 'ST' 
+and t.`股票代码` not in (select DISTINCT 股票代码  from stock_holder_detail t
+where 动作  like '%减少%'  
+and `更新日期` >  SUBDATE(curdate(),30 ))"""
 df_retail= pd.read_sql(sql, con=db_connection)
 
 data_all=pd.concat([data_all,df_retail],axis=0)#添加到主表
