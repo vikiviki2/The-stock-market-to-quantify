@@ -14,8 +14,7 @@ from 牛散排名  import *
 import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver import ChromeOptions
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.edge.service import Service
 from lxml import etree
 import time
 import os
@@ -113,11 +112,12 @@ def find_data(df_hoder_net):
     url_pre='http://cwzx.shdjt.com/'
     url=url_pre+df_hoder_net
     print(url)
-    os.chdir(r'D:\chromedriver')
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--headless')#无界面
-    browser=webdriver.Chrome(chrome_options=chrome_options)
-    #browser=webdriver.Chrome()
+    driver_path = r'D:\edgedriver\msedgedriver.exe'
+    options = webdriver.EdgeOptions()
+    options.add_argument('--headless=new')#无界面
+    options.add_argument('--disable-gpu')
+    service = Service(driver_path)
+    browser=webdriver.Edge(service=service, options=options)
 
     browser.get(url)
     browser.implicitly_wait(4)

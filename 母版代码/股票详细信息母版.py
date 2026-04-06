@@ -8,6 +8,7 @@ Created on Fri Aug 19 21:59:49 2022
 import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.edge.service import Service
 import time
 import os
 # import json
@@ -29,11 +30,13 @@ def change_df(df):
 
 gp='002340'
 url='http://quote.eastmoney.com/sz002340.html'
-os.chdir(r'D:\chromedriver')
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument('--headless')#无界面
-browser=webdriver.Chrome(chrome_options=chrome_options)
-# browser=webdriver.Chrome()
+driver_path = r'D:\edgedriver\msedgedriver.exe'
+options = webdriver.EdgeOptions()
+options.add_argument('--headless=new')#无界面
+options.add_argument('--disable-gpu')
+service = Service(driver_path)
+browser = webdriver.Edge(service=service, options=options)
+# browser=webdriver.Edge(service=service, options=options)
 browser.get(url)
 
 html=browser.page_source

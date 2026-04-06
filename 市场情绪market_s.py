@@ -13,8 +13,7 @@ Created on Sun Mar 27 15:28:35 2022
 import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver import ChromeOptions
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.edge.service import Service
 from lxml import etree
 import time
 import os
@@ -81,12 +80,14 @@ def fetch(gp_code):
             url_pre='http://quote.eastmoney.com/'
             # http://quote.eastmoney.com/sz002340.html
             url=url_pre+szsh+gp +'.html'
-            options = webdriver.ChromeOptions()
+            driver_path = r'D:\edgedriver\msedgedriver.exe'
+            options = webdriver.EdgeOptions()
             options.add_argument('--disable-dev-shm-usage')
             options.add_argument('--no-sandbox')
-            options.add_argument('--headless')
+            options.add_argument('--headless=new')
             options.add_argument('--ignore-certificate-errors')
-            browser = webdriver.Chrome(r'chromedriver', options=options)
+            service = Service(driver_path)
+            browser = webdriver.Edge(service=service, options=options)
 
            
             

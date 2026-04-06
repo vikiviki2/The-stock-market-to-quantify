@@ -8,6 +8,7 @@ Created on Sun Jul  3 16:02:58 2022
 import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.edge.service import Service
 import time
 import os
 import json
@@ -68,12 +69,14 @@ print("已检查retail_in_rank是否有重复数据")
 
 
 
-os.chdir(r'D:\chromedriver')
+driver_path = r'D:\edgedriver\msedgedriver.exe'
 
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument('--headless')#无界面
-browser=webdriver.Chrome(chrome_options=chrome_options)
-# browser=webdriver.Chrome()
+options = webdriver.EdgeOptions()
+options.add_argument('--headless=new')#无界面
+options.add_argument('--disable-gpu')
+service = Service(driver_path)
+browser = webdriver.Edge(service=service, options=options)
+# browser=webdriver.Edge(service=service, options=options)
 url='http://cwzx.shdjt.com/top500.asp'
 browser.get(url)
 browser.implicitly_wait(3)

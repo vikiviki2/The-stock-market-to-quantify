@@ -8,6 +8,7 @@ Created on Tue Dec 13 20:28:39 2022
 import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.edge.service import Service
 import time
 import os
 import json
@@ -35,10 +36,12 @@ url_compare=''
 keep=0
 while True:
     for url in url_list:
-        os.chdir(r'D:\chromedriver')
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--headless')#无界面
-        browser=webdriver.Chrome(chrome_options=chrome_options)
+        driver_path = r'D:\edgedriver\msedgedriver.exe'
+        options = webdriver.EdgeOptions()
+        options.add_argument('--headless=new')#无界面
+        options.add_argument('--disable-gpu')
+        service = Service(driver_path)
+        browser = webdriver.Edge(service=service, options=options)
         #print(url)
         browser.get(url)
         browser.implicitly_wait(6)

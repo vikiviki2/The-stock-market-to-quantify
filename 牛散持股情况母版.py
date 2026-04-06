@@ -8,8 +8,7 @@ Created on Tue Sep  6 21:37:28 2022
 import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver import ChromeOptions
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.edge.service import Service
 from lxml import etree
 import time
 import os
@@ -39,11 +38,12 @@ df_hoder_name='重庆建工'
 url='http://cwzx.shdjt.com/cwcx.asp?gdmc=%D6%D8%C7%EC%BD%A8%B9%A4'
 
 print(url)
-os.chdir(r'D:\chromedriver')
-chrome_options = webdriver.ChromeOptions()
-#chrome_options.add_argument('--headless')#无界面
-#browser=webdriver.Chrome(chrome_options=chrome_options)
-browser=webdriver.Chrome()
+driver_path = r'D:\edgedriver\msedgedriver.exe'
+options = webdriver.EdgeOptions()
+#options.add_argument('--headless=new')#无界面
+options.add_argument('--disable-gpu')
+service = Service(driver_path)
+browser=webdriver.Edge(service=service, options=options)
 print('开始')
 browser.get(url)
 browser.implicitly_wait(4)
