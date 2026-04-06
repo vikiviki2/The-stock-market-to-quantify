@@ -9,16 +9,21 @@ Created on Wed Sep 15 10:30:14 2021
 import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.edge.service import Service
 import time
 import os
 import json
 import requests
 import re
-os.chdir(r'D:\chromedriver')
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument('--headless')#无界面
-browser=webdriver.Chrome(chrome_options=chrome_options)
-# browser=webdriver.Chrome()
+os.chdir(r'D:\edgedriver')
+edge_options = webdriver.EdgeOptions()
+edge_options.add_argument('--headless=new')  # 新版无界面
+edge_options.add_argument('--disable-gpu')
+edge_options.add_argument('--no-sandbox')
+
+service = Service(executable_path=EDGE_DRIVER_PATH)
+browser = webdriver.Edge(service=service, options=edge_options)
+
 url='http://guba.eastmoney.com/rank/'
 browser.get(url)
 browser.execute_script('window.scrollTo(0,document.body.scrollHeight)')
