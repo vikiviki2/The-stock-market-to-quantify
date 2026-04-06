@@ -15,14 +15,21 @@ import os
 import json
 import requests
 import re
-os.chdir(r'D:\edgedriver')
-edge_options = webdriver.EdgeOptions()
-edge_options.add_argument('--headless=new')  # 新版无界面
-edge_options.add_argument('--disable-gpu')
-edge_options.add_argument('--no-sandbox')
 
-service = Service(executable_path=EDGE_DRIVER_PATH)
-browser = webdriver.Edge(service=service, options=edge_options)
+
+# 你的 Edge 驱动路径
+driver_path = r'D:\edgedriver\msedgedriver.exe'
+
+# Edge 设置
+options = webdriver.EdgeOptions()
+options.add_argument('--headless=new')  # 无界面
+options.add_argument('--disable-gpu')
+
+# 启动
+service = Service(driver_path)
+browser = webdriver.Edge(service=service, options=options)
+
+
 
 url='http://guba.eastmoney.com/rank/'
 browser.get(url)
